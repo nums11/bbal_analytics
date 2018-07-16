@@ -48,4 +48,34 @@ public:
 
 };
 
+	bool sortEvents(const Event& one, const Event& two) {
+		//Events are sorted by ascending periods, then descending PC_times,
+		//ascending WC_times, and ascending Event_numbers
+		if(one.period < two.period) 
+			return true;
+		if(one.period > two.period)
+			return false;
+		if(one.period == two.period) {
+			if(one.pc_time > two.pc_time)
+				return true;
+			if(one.pc_time < two.pc_time)
+				return false;
+			if(one.pc_time == two.pc_time)
+			{
+				if(one.wc_time < two.wc_time)
+					return true;
+				if(one.wc_time > two.wc_time)
+					return false;
+				if(one.wc_time == two.wc_time)
+				{
+					if(one.event_number < two.event_number)
+						return true;
+					else
+						return false;
+				}
+			}	
+		}
+		return true;
+	}
+
 #endif
