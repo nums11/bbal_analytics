@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <utility>
 #include "Game.h"
 #include "Event.h"
 #include "Person.h"
@@ -16,7 +17,7 @@ int main(int argc, char const *argv[])
 	vector<Game> games;
 	vector<string> data, team_ids;
 	vector<Game>::iterator game;
-	string str, line, game_id;
+	string str, line, game_id, event_msg_type_description;
 	//For Reading in Events
 	int event_number, event_msg_type, period, wc_time,
 	pc_time, action_type, option_1, option_2, option_3, team_id_type;
@@ -113,10 +114,8 @@ int main(int argc, char const *argv[])
 			option_1, option_2, option_3, team_id, person_1, person_2, team_id_type));
 	}
 
-	//TEST! PRINTING EVERY GAME TO MAKE SURE THE EVENTS WERE ADDED CORRECTLY
-	//EVENTS STILL NEED TO BE SORTED (SEE PAGE 2 OF BASKETBALL ANALYTICS PROMPT.PDF UNDER PLAY
-	//BY PLAY SAMPLE.TXT)
-	//Uncomment code below
+
+	//TEST! MAKING SURE EVENTS ARE SORTED
 	// for(int i = 0; i < games.size(); i++){
 	// 	games[i].printGame();
 	// }
@@ -135,24 +134,63 @@ int main(int argc, char const *argv[])
 		file >> str;
 	}
 
-	vector<string> event_codes;
+	//The only event codes that matter for calculating plus/minus are the 
+	//made shots, free throws, and subsitutions
 
-	//reading in event codes file line by line
+	vector<pair<int,int> > made_shot_codes;
+	vector<pair<int,int> > free_throw_codes;
+	vector<pair<int,int> > substitution_codes;
+
+	//reading in event codes file line by line and adding pairs
+	//of codes to the correct vectors
 	num_columns = 8;
-	while(file >> str){
-		line = " ";
-		for(int i = 0; i < 8; i++){
-			line += str;
-			line += " ";
-			file >> str;
+	while(file >> event_msg_type){
+		file >> action_type;
+
+		event_msg_type_description = "";
+		//read event_msg_type_description
+		while(file >> str){
+			event_msg_type_description += str;
+			if(str == string(1,'"')) break;
 		}
-		event_codes.push_back(line);
-		break; 
+
+		//add pair to the correct event codes vector
+		if(event_msg_type_description == "\"MadeShot\""){
+			made_shot_codes.push_back(pair<int,int>(event_msg_type,action_type));
+		} else if(event_msg_type_description == "\"FreeThrow\""){
+			free_throw_codes.push_back(pair<int,int>(event_msg_type,action_type));
+		} else if(event_msg_type_description == "\"Substitution\""){
+			substitution_codes.push_back(pair<int,int>(event_msg_type,action_type));
+		}
+
+		//special cases where the rest of the file needs to be read in differently
+		if(event_msg_type_description == "\"Substitution\"" || event_msg_type_description == "\"JumpBall\"" ||
+			event_msg_type_description == "\"StartPeriod\"" || event_msg_type_description == "\"EndPeriod\""){
+			//in this instance read in 2 quotes before breaking line
+			int num_quotes = 0;
+			while(file >> str){
+				if(str == string(1,'"')){
+					num_quotes++;
+				} 
+				if(num_quotes == 2) break;
+			}		
+		} else if(event_msg_type_description != "\"NoShot\""){
+			//normal case - just read till end quote is found
+			while(file >> str){
+				if(str == string(1,'"')) break;
+			}
+		}
+
+
 	}
 
-	for(int i = 0; i < event_codes.size(); i++){
-		cout << event_codes[i] << endl;
- 	}
+	for(int i = 0; i < substitution_codes.size(); i++){
+		cout << (substitution_codes[i]).first << " " << (substitution_codes[i]).second << endl;
+	}
+
+	// for(int i = 0; i < event_codes.size(); i++){
+	// 	cout << event_codes[i] << endl;
+ // 	}
 
 	file.close();
 	return 0;
