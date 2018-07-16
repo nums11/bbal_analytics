@@ -8,6 +8,7 @@
 #include "Person.h"
 using namespace std;
 
+
 int main(int argc, char const *argv[])
 {
 	vector<Person> people;
@@ -115,6 +116,7 @@ int main(int argc, char const *argv[])
 	//EVENTS STILL NEED TO BE SORTED (SEE PAGE 2 OF BASKETBALL ANALYTICS PROMPT.PDF UNDER PLAY
 	//BY PLAY SAMPLE.TXT)
 	for(int i = 0; i < games.size(); i++){
+		sort(games[i].events.begin(), games[i].events.end(), sortEvents);
 		games[i].printGame();
 	}
 
