@@ -65,7 +65,8 @@ int main(int argc, char const *argv[])
 	// }
 
 	file.close();
-	
+
+
 
 	//Reading Play by Play-------------------------------------------------
 
@@ -114,12 +115,42 @@ int main(int argc, char const *argv[])
 	//TEST! PRINTING EVERY GAME TO MAKE SURE THE EVENTS WERE ADDED CORRECTLY
 	//EVENTS STILL NEED TO BE SORTED (SEE PAGE 2 OF BASKETBALL ANALYTICS PROMPT.PDF UNDER PLAY
 	//BY PLAY SAMPLE.TXT)
-	for(int i = 0; i < games.size(); i++){
-		games[i].printGame();
-	}
+	// for(int i = 0; i < games.size(); i++){
+	// 	games[i].printGame();
+	// }
 
 
 	file.close();
 
+
+
+	//READING EVENT CODES FILE----------------------------------------------
+	file.open("NBA Hackathon - Event Codes.txt");
+
+	//Read in column headers
+	for(int i = 0; i < 4; i++){
+		file >> str;
+	}
+
+	vector<string> event_codes;
+
+	//reading in event codes file line by line
+	num_columns = 8;
+	while(file >> str){
+		line = " ";
+		for(int i = 0; i < 8; i++){
+			line += str;
+			line += " ";
+			file >> str;
+		}
+		event_codes.push_back(line);
+		break; 
+	}
+
+	for(int i = 0; i < event_codes.size(); i++){
+		cout << event_codes[i] << endl;
+ 	}
+
+	file.close();
 	return 0;
 }
